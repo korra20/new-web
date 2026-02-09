@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moja Digitálna Vizitka</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --text-dark: #1f2937;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        /* --- Profilová fotka (Upravené štýly) --- */
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover; /* Aby sa fotka nedeformovala */
+            border: 4px solid var(--primary);
+            margin-bottom: 15px;
+            background-color: white;
+        }
+
+        h2 { color: var(--text-dark); margin-bottom: 5px; font-weight: 600; }
+        .job-title { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
+
+        #qrcode {
+            margin: 20px auto;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        #qrcode img { display: block; }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .editor {
+            display: none;
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .form-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-size: 0.8rem; color: #666; margin-bottom: 5px; }
+        
+        input {
+            width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px;
+            font-size: 1rem; outline: none; transition: border-color 0.3s;
+        }
+        input:focus { border-color: var(--primary); }
+        
+        /* Špeciálny štýl pre nahrávanie súboru */
+        input[type="file"] {
+            padding: 5px;
+            background: #f9f9f9;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="card-view" class="card">
+            <img src="https://via.placeholder.com/150" alt="Profil" class="profile-img" id="display-img">
+            
+            <h2 id="display-name">Meno Priezvisko</h2>
+            <div class="job-title" id="display-job">Pracovná pozícia</div>
+
+            <div id="qrcode"></div>
+
+            <br>
+            <button class="btn" onclick="toggleEditor()">
+                <i class="fas fa-edit"></i> Upraviť vizitku
+            </button>
+        </div>
+
+        <div id="editor-view" class="editor">
+            <h3><i class="fas fa-cog"></i> Nastavenia</h3>
+            <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
+
+            <div class="form-group">
+                <label>Profilová fotka (Vyberte z galérie)</label>
+                <input type="file" id="input-file" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label>Meno a Priezvisko</label>
+                <input type="text" id="input-name" placeholder="napr. Ján Novák">
+            </div>
+            <div class="form-group">
+                <label>Pracovná pozícia</label>
+                <input type="text" id="input-job" placeholder="napr. Manažér">
+            </div>
+            <div class="form-group">
+                <label>Telefón</label>
+                <input type="tel" id="input-phone" placeholder="+421 900 000 000">
+            </div>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="input-email" placeholder="email@domena.sk">
+            </div>
+            <div class="form-group">
+                <label>Farba témy</label>
+                <input type="color" id="input-color" value="#6366f1" oninput="previewTheme()">
+            </div>
+
+            <button class="btn" style="width: 100%; justify-content: center;" onclick="saveData()">
+                <i class="fas fa-save"></i> Uložiť Zmeny
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        const qrContainer = document.getElementById('qrcode');
+        // Premenná na uloženie obrázku v textovej podobe (Base64)
+        let currentImageSrc = "https://via.placeholder.com/150"; 
+
+        // --- 1. NAČÍTANIE FOTKY Z POČÍTAČA/MOBILU ---
+        document.getElementById('input-file').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            
+            if (file) {
+                // Kontrola veľkosti (max 2MB, aby sa nezaplnila pamäť)
+                if (file.size > 2000000) {
+                    alert("Obrázok je príliš veľký! Prosím vyberte menší (do 2MB).");
+                    return;
+                }
+
+                const reader = new FileReader();
+                
+                // Keď sa súbor načíta...
+                reader.onload = function(e) {
+                    currentImageSrc = e.target.result; // Uloženie Base64 reťazca
+                    document.getElementById('display-img').src = currentImageSrc; // Okamžitá zmena
+                }
+                
+                // Prečítaj súbor ako Data URL (Base64)
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- 2. START APLIKÁCIE ---
+        window.onload = function() {
+            const savedData = localStorage.getItem('myBizCard_Data_V2');
+            
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                updateUI(data);
+                fillInputs(data);
+                document.documentElement.style.setProperty('--primary', data.color);
+                
+                // Načítanie uloženej fotky
+                if (data.image) {
+                    currentImageSrc = data.image;
+                    document.getElementById('display-img').src = currentImageSrc;
+                }
+            } else {
+                generateQR({
+                    name: "Vaše Meno",
+                    job: "Pozícia",
+                    phone: "",
+                    email: "",
+                    color: "#6366f1"
+                });
+            }
+        };
+
+        function generateQR(data) {
+            qrContainer.innerHTML = "";
+            const vCardData = `BEGIN:VCARD
+VERSION:3.0
+N;CHARSET=UTF-8:${data.name};;;;
+FN;CHARSET=UTF-8:${data.name}
+ORG;CHARSET=UTF-8:${data.job}
+TEL;TYPE=CELL:${data.phone}
+EMAIL:${data.email}
+END:VCARD`;
+
+            new QRCode(qrContainer, {
+                text: vCardData,
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        // --- 3. ULOŽENIE AJ S OBRÁZKOM ---
+        function saveData() {
+            const data = {
+                name: document.getElementById('input-name').value || "Bez mena",
+                job: document.getElementById('input-job').value,
+                phone: document.getElementById('input-phone').value,
+                email: document.getElementById('input-email').value,
+                color: document.getElementById('input-color').value,
+                image: currentImageSrc // Ukladáme aj fotku!
+            };
+
+            // Uložíme do LocalStorage
+            try {
+                localStorage.setItem('myBizCard_Data_V2', JSON.stringify(data));
+                updateUI(data);
+                alert("Vizitka a fotka boli uložené!");
+                document.getElementById('editor-view').style.display = 'none';
+            } catch (e) {
+                alert("Chyba: Obrázok je pravdepodobne príliš veľký pre pamäť prehliadača.");
+            }
+        }
+
+        function updateUI(data) {
+            document.getElementById('display-name').innerText = data.name;
+            document.getElementById('display-job').innerText = data.job;
+            generateQR(data);
+        }
+
+        function fillInputs(data) {
+            document.getElementById('input-name').value = data.name;
+            document.getElementById('input-job').value = data.job;
+            document.getElementById('input-phone').value = data.phone;
+            document.getElementById('input-email').value = data.email;
+            document.getElementById('input-color').value = data.color;
+        }
+
+        function previewTheme() {
+            const color = document.getElementById('input-color').value;
+            document.documentElement.style.setProperty('--primary', color);
+        }
+
+        function toggleEditor() {
+            const editor = document.getElementById('editor-view');
+            if (editor.style.display === 'none' || editor.style.display === '') {
+                const password = prompt("Heslo (admin123):");
+                if (password === "admin123") {
+                    editor.style.display = 'block';
+                    editor.scrollIntoView({behavior: "smooth"});
+                } else {
+                    alert("Zlé heslo.");
+                }
+            } else {
+                editor.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
